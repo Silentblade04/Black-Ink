@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 97843968}
   - component: {fileID: 97843967}
+  - component: {fileID: 97843969}
   m_Layer: 0
   m_Name: MasterController
   m_TagString: Untagged
@@ -165,6 +166,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &97843969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97843966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32b28c5c8da16a04781527048d94c7fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TurnSystem
+  actorComponents: []
 --- !u!1 &187730697
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,6 +547,7 @@ GameObject:
   - component: {fileID: 205957849}
   - component: {fileID: 205957848}
   - component: {fileID: 205957852}
+  - component: {fileID: 205957853}
   m_Layer: 0
   m_Name: Target
   m_TagString: Enemy
@@ -646,6 +661,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 610f1c264910f834395e6392cb8a5320, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
+--- !u!114 &205957853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205957847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 573e468183774bd49b14ac7e047df942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -1059,6 +1086,7 @@ GameObject:
   - component: {fileID: 697461609}
   - component: {fileID: 697461608}
   - component: {fileID: 697461607}
+  - component: {fileID: 697461612}
   m_Layer: 0
   m_Name: Target (2)
   m_TagString: Enemy
@@ -1172,6 +1200,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &697461612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697461606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 573e468183774bd49b14ac7e047df942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1662,6 +1702,7 @@ GameObject:
   - component: {fileID: 1780208950}
   - component: {fileID: 1780208949}
   - component: {fileID: 1780208948}
+  - component: {fileID: 1780208953}
   m_Layer: 0
   m_Name: Target (1)
   m_TagString: Enemy
@@ -1775,6 +1816,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1780208953
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1780208947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 573e468183774bd49b14ac7e047df942, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
 --- !u!1 &1943211276
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,6 +2000,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2017359738}
   - component: {fileID: 2017359739}
+  - component: {fileID: 2017359740}
   m_Layer: 0
   m_Name: OmniPlayer
   m_TagString: Untagged
@@ -1983,6 +2037,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MasterPlayer
   target: {fileID: 0}
   player: {fileID: 0}
+--- !u!114 &2017359740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2017359737}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dadb491fa0c700478b229d4ff8720a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerActor
 --- !u!1 &2135570298
 GameObject:
   m_ObjectHideFlags: 0
