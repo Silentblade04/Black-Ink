@@ -7,7 +7,7 @@ using UnityEngine;
 //Some help from chatGPT
 public class MasterList : MonoBehaviour
 {
-    [SerializeField] private List<Enemy> enemies = new List<Enemy>();
+    [SerializeField] private List<EnemyAI> enemies = new List<EnemyAI>();
     [SerializeField] private List<PlayerController> players = new List<PlayerController>();
 
     [System.Obsolete] //idk it yells at me without this
@@ -20,7 +20,7 @@ public class MasterList : MonoBehaviour
         foreach (GameObject obj in Object.FindObjectsOfType<GameObject>())
         {
             // Check MyScript
-            Enemy E = obj.GetComponent<Enemy>();
+            EnemyAI E = obj.GetComponent<EnemyAI>();
             if (E != null)
                 enemies.Add(E);
 

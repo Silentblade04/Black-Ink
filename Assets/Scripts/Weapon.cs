@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEngine.EventSystems.EventTrigger;
 using static UnityEngine.UI.Image;
 
 public class Weapon : MonoBehaviour
@@ -20,9 +21,9 @@ public class Weapon : MonoBehaviour
     [SerializeField] private float Accuracy; // = dexterity times the accuracy stat of the weapon
     [SerializeField] private int ArmorPiercing;
     [SerializeField] private int Burst;
-    
-    [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private int rayDistance;   //Range
+
+    [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
 
     void Start()
@@ -50,11 +51,11 @@ public class Weapon : MonoBehaviour
         {
             switchweapons();
         }
+        target = player.trg;
     }
 
     public void shoot()
     {
-        target = player.trg;
 
         Debug.Log("Shooting");
         if (target == null)
@@ -62,18 +63,34 @@ public class Weapon : MonoBehaviour
             Debug.Log("No target");
             return;
         }
-        Vector3 direction = (target.transform.localPosition - playerController.transform.localPosition).normalized;
+        Vector3 direction = (target.transform.position - playerController.transform.position).normalized;
+
         Vector3 deviatedDirection = ApplyDeviation(direction, Accuracy);
 
         // Fire the ray
-        if (Physics.Raycast(playerController.transform.localPosition, deviatedDirection, out RaycastHit hit, rayDistance, hitLayers))
+        if (Physics.Raycast(playerController.transform.position, deviatedDirection, out RaycastHit hit, rayDistance, hitLayers))
         {
-            Debug.Log("Hit: " + hit.collider.name);
-            Debug.DrawLine(playerController.transform.localPosition, hit.point, Color.red, 2f);
+            Debug.DrawLine(playerController.transform.position, hit.point, Color.red, 15f);
+
+            if (hit.collider.CompareTag("Enemy")) //For when we shoot enemies
+            {
+                Debug.Log("Hit an enemy!");
+                EnemyAI enemy = hit.collider.GetComponent<EnemyAI>();
+                if (enemy != null)
+                {
+                    enemy.Hit(Damage);
+                }
+
+            }
+            else if (hit.collider.CompareTag("Environment"))
+            {
+                Debug.Log("Hit an Environment!");
+            }
+
         }
         else
         {
-            Debug.DrawRay(playerController.transform.localPosition, deviatedDirection * rayDistance, Color.yellow, 2f);
+            Debug.DrawRay(playerController.transform.position, deviatedDirection * rayDistance, Color.yellow, 15f);
             Debug.Log("Ray missed.");
         }
 
@@ -84,9 +101,10 @@ public class Weapon : MonoBehaviour
     {
         Debug.Log("math stuff");
         // Get a random direction inside a cone
-        return Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), Vector3.up) *
-               Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), Vector3.right) * direction;
-        
+        return Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), playerController.transform.up) *
+       Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), playerController.transform.right) *
+       direction;
+
     }
 
 

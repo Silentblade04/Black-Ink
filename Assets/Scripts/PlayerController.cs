@@ -24,4 +24,15 @@ public class PlayerController : MonoBehaviour
         perception = stats.precep;
         charisma = stats.chr;
     }
+
+    public void Hit(int damage) //This function takes an integer.
+    {
+        health -= damage;
+        Debug.Log("Took Damage");
+        if (health <= 0)
+        {
+            gameObject.SetActive(false);
+            Debug.Log("I am Dead");
+        }
+    }
 }
