@@ -4,6 +4,14 @@ using static UnityEngine.GraphicsBuffer;
 
 public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 {
+    // -----------------------------------------------------------
+    // BASIC PROPERTIES
+    // -----------------------------------------------------------
+
+    // The name of this actor, required by ITurnActor interface.
+    // Used mostly for logging/debugging.
+
+
     public string Name => "Enemy AI";
 
     [SerializeField] private GameObject target;
@@ -110,27 +118,45 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
             Debug.Log("I am Dead");
         }
     }
+    // -----------------------------------------------------------
+    // TURN FLOW METHODS
+    // -----------------------------------------------------------
 
+    // Called by TurnSystem at the start of this actor’s turn.
     public void StartTurn()
     {
         Debug.Log($"{Name}'s turn started... thinking.");
 
-        // Start a coroutine to simulate "thinking time"
+        // Start a coroutine to simulate some "thinking time"
+        // before the AI takes its action.
         StartCoroutine(DoEnemyAction());
     }
 
+    // Coroutine to simulate AI delay and perform an action.
     private IEnumerator DoEnemyAction()
     {
-        // Simulate a short delay before acting
+        // This is the section that Would be changed as we want to change what the AI does during their turn
+        // Wait for 1 second to simulate calculation or animation delay
         yield return new WaitForSeconds(1f);
 
+        // Pick a random number between 1 and 5 inclusive
         int action = Random.Range(1, 6);  // ✅ Produces 1–5 inclusive
         Debug.Log($"{Name} chose action #{action}");
 
-        // End turn after acting
-        FindObjectOfType<TurnSystem>().EndTurn();
+        // Notify the TurnSystem that the enemy has finished its turn.
+        // Using the modern method to find the TurnSystem in the scene.
+        var turnSystem = FindFirstObjectByType<TurnSystem>();
+        if (turnSystem != null)
+        {
+            turnSystem.EndTurn();  // End the AI’s turn and pass control to next actor
+        }
+        else
+        {
+            Debug.LogError("TurnSystem not found in the scene!");
+        }
     }
 
+    // Called by TurnSystem at the end of this actor’s turn.
     public void EndTurn()
     {
         Debug.Log($"{Name}'s turn ended.");
