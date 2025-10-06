@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -10,11 +11,14 @@ public class Weapon : MonoBehaviour
     public PlayerController playerController; //Actual player object
 
     [SerializeField] private GameObject target;
+    
 
     [SerializeField] private WeaponStats stats;
     [SerializeField] private PlayerStats playerStats;
 
     [SerializeField] private float Dexterity;
+
+    public int actions;
 
     [SerializeField] private int Damage;
     [SerializeField] private int Rounds;
@@ -25,6 +29,7 @@ public class Weapon : MonoBehaviour
 
     [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
+
 
     void Start()
     {
@@ -44,19 +49,25 @@ public class Weapon : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0)){
-
-        }
         if (Input.GetMouseButtonDown(1))
         {
             switchweapons();
         }
+        actions = playerController.actLeft;
         target = player.trg;
     }
 
     public void shoot()
     {
-
+        if (actions == 0)
+        {
+            Debug.Log("Out of actions");
+            return;
+        }
+        else
+        {
+            playerController.ActionUsed(1);
+        }
         Debug.Log("Shooting");
         if (target == null)
         {
@@ -93,7 +104,6 @@ public class Weapon : MonoBehaviour
             Debug.DrawRay(playerController.transform.position, deviatedDirection * rayDistance, Color.yellow, 15f);
             Debug.Log("Ray missed.");
         }
-
 
     }
 

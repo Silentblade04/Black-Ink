@@ -10,6 +10,10 @@ public class MasterList : MonoBehaviour
     [SerializeField] private List<EnemyAI> enemies = new List<EnemyAI>();
     [SerializeField] private List<PlayerController> players = new List<PlayerController>();
 
+    [SerializeField] private int actionAmount;
+
+    [SerializeField] private TurnSystem turnSystem;
+
     [System.Obsolete] //idk it yells at me without this
 
     void Start()
@@ -28,14 +32,17 @@ public class MasterList : MonoBehaviour
             PlayerController PC = obj.GetComponent<PlayerController>();
             if (PC != null)
                 players.Add(PC);
-            
         }
         Debug.Log("Found " + enemies.Count + " Enemy components.");
         Debug.Log("Found " + players.Count + " Player components.");
     }
 
-    void Update()
+    public void OnTurnStart()
     {
-        
+
+        foreach (PlayerController pc in players)
+        {
+            pc.ActionAdd(pc.act); 
+        }
     }
 }

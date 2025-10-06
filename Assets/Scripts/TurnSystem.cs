@@ -17,6 +17,8 @@ public class TurnSystem : MonoBehaviour
         void EndTurn();                    // Called when this actor’s turn ends
     }
 
+    [SerializeField] private bool playerTurn;
+    [SerializeField] private MasterList masterList;
     // -----------------------------------------------------------
     // INSPECTOR FIELDS
     // -----------------------------------------------------------
@@ -61,21 +63,10 @@ public class TurnSystem : MonoBehaviour
             Debug.LogError("TurnSystem has no participants!");
             return;                         // Stops the game if no actors were added
         }
-
         currentTurnIndex = 0;               // Start with the first actor in the list
         BeginCurrentTurn();                 // Kick off the first turn
     }
 
-    // Update() is called every frame.
-    // We use it to check for input to manually end a turn with the SPACEBAR.
-    private void Update()
-    {
-        //New Input System way to detect SPACEBAR being pressed in the current frame
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
-        {
-            EndTurn();                      // Manually end the current turn
-        }
-    }
 
     // -----------------------------------------------------------
     // TURN FLOW METHODS
@@ -85,8 +76,21 @@ public class TurnSystem : MonoBehaviour
     private void BeginCurrentTurn()
     {
         ITurnActor current = turnOrder[currentTurnIndex]; // Get the current actor
+        if (currentTurnIndex == 0)
+        {
+            playerTurn = true;
+        }
+        else
+        {
+            playerTurn= false;
+        }
+        if (currentTurnIndex == 0)
+        {
+            masterList.OnTurnStart();
+        }
         Debug.Log($"--- {current.Name}'s Turn ---");       // Log for debugging
-        current.StartTurn();                               // Tell the actor to start their turn
+        current.StartTurn();                               // Tell the actor to start their turn\
+
     }
 
     // EndTurn() is called to end the current actor’s turn.

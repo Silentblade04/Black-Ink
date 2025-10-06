@@ -25,7 +25,6 @@ public class MasterPlayer : MonoBehaviour
             //pulled from chatGPT
             if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
             {
-                Debug.Log("Clicked UI, not selecting objects.");
                 return; // Skip selection
             }
 
@@ -50,6 +49,7 @@ public class MasterPlayer : MonoBehaviour
                 {
                     player = hitInfo.collider.gameObject;
                     GetComponent<Weapon>();
+                    GetComponent<PlayerController>();
                     return;
 
 

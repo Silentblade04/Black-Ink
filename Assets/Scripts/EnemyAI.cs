@@ -10,7 +10,7 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 
     // The name of this actor, required by ITurnActor interface.
     // Used mostly for logging/debugging.
-
+    public int act { get { return actions; } }
 
     public string Name => "Enemy AI";
 
