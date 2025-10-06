@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 [RequireComponent(typeof(Rigidbody))]
 public class GridClickMovement : MonoBehaviour
@@ -24,11 +25,6 @@ public class GridClickMovement : MonoBehaviour
         HandleMouseClick();               // Check for player input every frame
     }
 
-    void FixedUpdate()
-    {
-        MoveAlongPath();                  // Move player smoothly using physics
-    }
-
     /// <summary>
     /// Detects left mouse clicks and calculates path to clicked grid location
     /// </summary>
@@ -36,6 +32,10 @@ public class GridClickMovement : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))  // Check for left mouse button
         {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                return; // Skip selection
+            }
             // Cast a ray from the camera through the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -48,11 +48,14 @@ public class GridClickMovement : MonoBehaviour
                     Mathf.Round(hit.point.z)
                 );
 
+                
                 // Generate path using diagonal first, then straight moves
                 GeneratePath(transform.position, targetPos);
             }
         }
     }
+
+
 
     /// <summary>
     /// Generates a path from start to end using diagonal (45°) moves first, then straight (90°)
@@ -106,7 +109,7 @@ public class GridClickMovement : MonoBehaviour
     /// <summary>
     /// Moves the player along the queued path using Rigidbody
     /// </summary>
-    void MoveAlongPath()
+    public void MoveAlongPath()
     {
         if (currentTarget == null) return; // No target to move toward
 

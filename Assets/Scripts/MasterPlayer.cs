@@ -13,6 +13,8 @@ public class MasterPlayer : MonoBehaviour
     [SerializeField] private GameObject target; //The target of an action like shoot
     [SerializeField] private GameObject player; //The selected player character
 
+
+
     void Start()
     {
         mainCamera = Camera.main; //assigns the camera
@@ -47,12 +49,12 @@ public class MasterPlayer : MonoBehaviour
                 }
                 if(hitInfo.collider.gameObject.tag == "Player")
                 {
+                    
                     player = hitInfo.collider.gameObject;
                     GetComponent<Weapon>();
                     GetComponent<PlayerController>();
+                    GetComponent<GridClickMovement>();    
                     return;
-
-
                 }
             }
         }
