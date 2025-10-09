@@ -554,6 +554,7 @@ GameObject:
   - component: {fileID: 205957849}
   - component: {fileID: 205957848}
   - component: {fileID: 205957853}
+  - component: {fileID: 205957854}
   m_Layer: 0
   m_Name: Target
   m_TagString: Enemy
@@ -687,6 +688,33 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 0
+--- !u!54 &205957854
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205957847}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &218556245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,6 +1276,7 @@ GameObject:
   - component: {fileID: 697461609}
   - component: {fileID: 697461608}
   - component: {fileID: 697461612}
+  - component: {fileID: 697461613}
   m_Layer: 0
   m_Name: Target (2)
   m_TagString: Enemy
@@ -1381,6 +1410,33 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 0
+--- !u!54 &697461613
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697461606}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2309,6 +2365,7 @@ GameObject:
   - component: {fileID: 1780208950}
   - component: {fileID: 1780208949}
   - component: {fileID: 1780208953}
+  - component: {fileID: 1780208954}
   m_Layer: 0
   m_Name: Target (1)
   m_TagString: Enemy
@@ -2442,6 +2499,33 @@ MonoBehaviour:
   hitLayers:
     serializedVersion: 2
     m_Bits: 0
+--- !u!54 &1780208954
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1780208947}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 0
 --- !u!1 &1943211276
 GameObject:
   m_ObjectHideFlags: 0
@@ -2647,7 +2731,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!1 &1988172518
 GameObject:
