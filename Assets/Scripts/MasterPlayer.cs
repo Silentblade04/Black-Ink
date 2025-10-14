@@ -14,7 +14,6 @@ public class MasterPlayer : MonoBehaviour
     [SerializeField] private GameObject player; //The selected player character
 
 
-
     void Start()
     {
         mainCamera = Camera.main; //assigns the camera
@@ -53,10 +52,12 @@ public class MasterPlayer : MonoBehaviour
                     player = hitInfo.collider.gameObject;
                     GetComponent<Weapon>();
                     GetComponent<PlayerController>();
-                    GetComponent<GridClickMovement>();    
+                    GetComponent<GridClickMovement>();
+                    //GetComponent<OutlineToggle>();
                     return;
                 }
             }
         }
     }
+    
 }
