@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,6 +14,9 @@ public class MasterPlayer : MonoBehaviour
 
     [SerializeField] private GameObject target; //The target of an action like shoot
     [SerializeField] private GameObject player; //The selected player character
+
+    [SerializeField] private PlayerController controller;
+    [SerializeField] private EnemyAI enemyAI;
 
 
     void Start()
@@ -39,21 +44,31 @@ public class MasterPlayer : MonoBehaviour
                 if (hitInfo.collider.gameObject.tag == "Environment")
                 {
                     Debug.Log("Hit the Environment");
+
                     return; //Skip
                 }
                 if (hitInfo.collider.gameObject.tag == "Enemy")
                 {
+                    if (target != null)
+                    {
+                        target.GetComponent<EnemyAI>().OutlineOff();
+                    }
                     target = hitInfo.collider.gameObject;
+                    enemyAI = target.GetComponent<EnemyAI>();
+                    enemyAI.Outline();
                     return;
                 }
                 if(hitInfo.collider.gameObject.tag == "Player")
                 {
-                    
+                    if (player != null)
+                    {
+                        player.GetComponent<PlayerController>().OutlineOff();
+                    }
                     player = hitInfo.collider.gameObject;
                     GetComponent<Weapon>();
-                    GetComponent<PlayerController>();
+                    controller = player.GetComponent<PlayerController>();
                     GetComponent<GridClickMovement>();
-                    //GetComponent<OutlineToggle>();
+                    controller.Outline();
                     return;
                 }
             }

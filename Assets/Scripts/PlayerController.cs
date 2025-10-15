@@ -16,8 +16,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float dexterity; //Influences accuracy
     [SerializeField] private int perception; //influences range that traps and enemies can bee seen
     [SerializeField] private int charisma; //Influences social skill checks
-
-
+    [SerializeField] Material[] mats;
+    [SerializeField] private Renderer rend;
 
     void Start()
     {
@@ -30,6 +30,25 @@ public class PlayerController : MonoBehaviour
         dexterity = stats.dex;
         perception = stats.precep;
         charisma = stats.chr;
+    
+        rend = GetComponent<Renderer>();
+        // Make sure the object has a renderer
+        if (rend != null)
+        {
+            // Get all materials on this object
+            mats = rend.materials;
+
+            // Example: Print all material names
+            foreach (Material m in mats)
+            {
+                Debug.Log("Material: " + m.name);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No Renderer found on " + gameObject.name);
+        }
+
     }
     public void Update()
     {
@@ -57,12 +76,28 @@ public class PlayerController : MonoBehaviour
     }
     public void heal(int heal) //also takes an integer
     {
+        Debug.Log("Calling Heal");
         currentHealth += heal;
         if (currentHealth >= health)
         {
             currentHealth = health;
         }
 
+    }
+    public void Outline()
+    {
+        Debug.Log("Calling Outline");
+        
+        Material outlineMat = mats[1];
+        Debug.Log(mats[1].name+" turned on");
+
+        outlineMat.SetFloat("_Outline_Thickness", 0.01f);
+        rend.materials = mats;
+    }
+    public void OutlineOff()
+    {
+        Material outlineMat = mats[1];
+        outlineMat.SetFloat("_Outline_Thickness", 0f);
     }
     
 }

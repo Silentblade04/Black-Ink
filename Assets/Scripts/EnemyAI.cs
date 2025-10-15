@@ -41,6 +41,9 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
 
+    [SerializeField] Material[] mats;
+    [SerializeField] private Renderer rend;
+
 
     private void Start()
     {
@@ -53,6 +56,24 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         dexterity = characterStats.dex;
         perception = characterStats.precep;
         charisma = characterStats.chr;
+
+        rend = GetComponent<Renderer>();
+        // Make sure the object has a renderer
+        if (rend != null)
+        {
+            // Get all materials on this object
+            mats = rend.materials;
+
+            // Example: Print all material names
+            foreach (Material m in mats)
+            {
+                Debug.Log("Material: " + m.name);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No Renderer found on " + gameObject.name);
+        }
     }
 
     public void shoot()
@@ -160,5 +181,20 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     public void EndTurn()
     {
         Debug.Log($"{Name}'s turn ended.");
+    }
+    public void Outline()
+    {
+        Debug.Log("Calling Outline");
+
+        Material outlineMat = mats[1];
+        Debug.Log(mats[1].name + " turned on");
+
+        outlineMat.SetFloat("_Outline_Thickness", 0.01f);
+        rend.materials = mats;
+    }
+    public void OutlineOff()
+    {
+        Material outlineMat = mats[1];
+        outlineMat.SetFloat("_Outline_Thickness", 0f);
     }
 }

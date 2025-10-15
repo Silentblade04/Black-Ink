@@ -23,12 +23,12 @@ public class MasterList : MonoBehaviour
 
         foreach (GameObject obj in Object.FindObjectsOfType<GameObject>())
         {
-            // Check MyScript
+            // Check for enemy scripts
             EnemyAI E = obj.GetComponent<EnemyAI>();
             if (E != null)
                 enemies.Add(E);
 
-            // Check OtherScript
+            // Check for player scripts
             PlayerController PC = obj.GetComponent<PlayerController>();
             if (PC != null)
                 players.Add(PC);
