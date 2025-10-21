@@ -3,6 +3,7 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.ProBuilder.Shapes;
 
 public class MasterPlayer : MonoBehaviour
 {
@@ -12,11 +13,21 @@ public class MasterPlayer : MonoBehaviour
     public GameObject ply { get { return player; } }
     public GameObject trg { get { return target; } }
 
+    public FiringCone firingCone;
+
+
     [SerializeField] private GameObject target; //The target of an action like shoot
     [SerializeField] private GameObject player; //The selected player character
 
     [SerializeField] private PlayerController controller;
     [SerializeField] private EnemyAI enemyAI;
+
+    [SerializeField] private GameObject cone;
+
+    [SerializeField] private Weapon weapon;
+    [SerializeField] private Transform playerTransform;
+
+    [SerializeField] private float rotationSpeed = 5f;
 
 
     void Start()
@@ -65,12 +76,32 @@ public class MasterPlayer : MonoBehaviour
                         player.GetComponent<PlayerController>().OutlineOff();
                     }
                     player = hitInfo.collider.gameObject;
-                    GetComponent<Weapon>();
+                    playerTransform = player.GetComponent<Transform>();
+                    weapon = player.GetComponent<Weapon>();
                     controller = player.GetComponent<PlayerController>();
                     GetComponent<GridClickMovement>();
                     controller.Outline();
+                    firingCone = player.GetComponent<FiringCone>();
                     return;
                 }
+            }
+        }
+        if (target != null && player != null)
+        {
+            Vector3 roationDirection = target.transform.position - player.transform.position;
+
+            if (roationDirection != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(roationDirection);
+                player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+            firingCone.WeaponAiming();
+        }
+        else
+        {
+            if (target == null && player != null)
+            {
+                firingCone.WeaponResting();
             }
         }
     }
