@@ -12,8 +12,8 @@ public class MasterPlayer : MonoBehaviour
 
     [SerializeField] private GameObject target; //The target of an action like shoot
     [SerializeField] private GameObject player; //The selected player character
-
-
+    [SerializeField] private GridHighlighter gridHighlighter; // assign in inspector
+    [SerializeField] private int highlightDiameter = 10; // default 10 blocks across
 
     void Start()
     {
@@ -49,14 +49,25 @@ public class MasterPlayer : MonoBehaviour
                 }
                 if(hitInfo.collider.gameObject.tag == "Player")
                 {
-                    
+
                     player = hitInfo.collider.gameObject;
+                    // Center highlight on the player's position
+                    if (gridHighlighter != null)
+                    {
+                        gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("MasterPlayer: GridHighlighter not assigned.");
+                    }
                     GetComponent<Weapon>();
                     GetComponent<PlayerController>();
-                    GetComponent<GridClickMovement>();    
+                    GetComponent<GridClickMovement>();
+                    //GetComponent<OutlineToggle>();
                     return;
                 }
             }
         }
     }
+    
 }
