@@ -7,20 +7,22 @@ public class PlayerController : MonoBehaviour
     public int act { get { return actions; } }
     public int actLeft { get { return fluxActions; } }
 
-    [SerializeField] private int health;
-    [SerializeField] private int actions;
-    [SerializeField] private int fluxActions;
-    [SerializeField] private int speed;
-    [SerializeField] private int strength;
-    [SerializeField] private float dexterity;
-    [SerializeField] private int perception;
-    [SerializeField] private int charisma;
-
-
+    [SerializeField] private int health; //This sets the base HP. Also works as the maximum HP
+    [SerializeField] private int currentHealth;// As they take damage this number goes down
+    [SerializeField] private int actions; //This sets the number of actions they can take each turn
+    [SerializeField] private int fluxActions; //This is the number that actually goes down as they take actions
+    [SerializeField] private int speed; //The # of tiles that they can move per action point
+    [SerializeField] private int strength; //Determins things like carrying capacity 
+    [SerializeField] private float dexterity; //Influences accuracy
+    [SerializeField] private int perception; //influences range that traps and enemies can bee seen
+    [SerializeField] private int charisma; //Influences social skill checks
+    [SerializeField] Material[] mats;
+    [SerializeField] private Renderer rend;
 
     void Start()
     {
         health = stats.hp;
+        currentHealth = health;
         actions = stats.act;
         fluxActions = actions;
         speed = stats.spd;
@@ -28,8 +30,30 @@ public class PlayerController : MonoBehaviour
         dexterity = stats.dex;
         perception = stats.precep;
         charisma = stats.chr;
-    }
+    
+        rend = GetComponent<Renderer>();
+        // Make sure the object has a renderer
+        if (rend != null)
+        {
+            // Get all materials on this object
+            mats = rend.materials;
 
+            // Example: Print all material names
+            foreach (Material m in mats)
+            {
+                Debug.Log("Material: " + m.name);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No Renderer found on " + gameObject.name);
+        }
+
+    }
+    public void Update()
+    {
+        
+    }
     public void ActionAdd(int actions)
     {
         fluxActions = actions;
@@ -42,12 +66,38 @@ public class PlayerController : MonoBehaviour
 
     public void Hit(int damage) //This function takes an integer.
     {
-        health -= damage;
+        currentHealth -= damage;
         Debug.Log("Took Damage");
-        if (health <= 0)
+        if (currentHealth <= 0)
         {
             gameObject.SetActive(false);
             Debug.Log("I am Dead");
         }
     }
+    public void heal(int heal) //also takes an integer
+    {
+        Debug.Log("Calling Heal");
+        currentHealth += heal;
+        if (currentHealth >= health)
+        {
+            currentHealth = health;
+        }
+
+    }
+    public void Outline()
+    {
+        Debug.Log("Calling Outline");
+        
+        Material outlineMat = mats[1];
+        Debug.Log(mats[1].name+" turned on");
+
+        outlineMat.SetFloat("_Outline_Thickness", 0.01f);
+        rend.materials = mats;
+    }
+    public void OutlineOff()
+    {
+        Material outlineMat = mats[1];
+        outlineMat.SetFloat("_Outline_Thickness", 0f);
+    }
+    
 }

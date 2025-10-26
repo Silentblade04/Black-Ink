@@ -6,16 +6,17 @@ TagManager:
   tags:
   - Environment
   - Enemy
+  - FiringCone
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Outline_1
   - Water
   - UI
-  - 
-  - 
-  - 
+  - Outline_2
+  - Outline_3
+  - Outline_4
   - 
   - 
   - 
@@ -52,3 +53,5 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
+  - EnemySelection
+  - Player Selection

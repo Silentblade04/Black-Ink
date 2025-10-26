@@ -1,6 +1,9 @@
+using NUnit.Framework;
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.ProBuilder.Shapes;
 
 public class MasterPlayer : MonoBehaviour
 {
@@ -10,10 +13,22 @@ public class MasterPlayer : MonoBehaviour
     public GameObject ply { get { return player; } }
     public GameObject trg { get { return target; } }
 
+    public FiringCone firingCone;
+
+
     [SerializeField] private GameObject target; //The target of an action like shoot
     [SerializeField] private GameObject player; //The selected player character
-    [SerializeField] private GridHighlighter gridHighlighter; // assign in inspector
-    [SerializeField] private int highlightDiameter = 10; // default 10 blocks across
+
+    [SerializeField] private PlayerController controller;
+    [SerializeField] private EnemyAI enemyAI;
+
+    [SerializeField] private GameObject cone;
+
+    [SerializeField] private Weapon weapon;
+    [SerializeField] private Transform playerTransform;
+
+    [SerializeField] private float rotationSpeed = 5f;
+
 
     void Start()
     {
@@ -40,32 +55,53 @@ public class MasterPlayer : MonoBehaviour
                 if (hitInfo.collider.gameObject.tag == "Environment")
                 {
                     Debug.Log("Hit the Environment");
+
                     return; //Skip
                 }
                 if (hitInfo.collider.gameObject.tag == "Enemy")
                 {
+                    if (target != null)
+                    {
+                        target.GetComponent<EnemyAI>().OutlineOff();
+                    }
                     target = hitInfo.collider.gameObject;
+                    enemyAI = target.GetComponent<EnemyAI>();
+                    enemyAI.Outline();
                     return;
                 }
                 if(hitInfo.collider.gameObject.tag == "Player")
                 {
-
+                    if (player != null)
+                    {
+                        player.GetComponent<PlayerController>().OutlineOff();
+                    }
                     player = hitInfo.collider.gameObject;
-                    // Center highlight on the player's position
-                    if (gridHighlighter != null)
-                    {
-                        gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("MasterPlayer: GridHighlighter not assigned.");
-                    }
-                    GetComponent<Weapon>();
-                    GetComponent<PlayerController>();
+                    playerTransform = player.GetComponent<Transform>();
+                    weapon = player.GetComponent<Weapon>();
+                    controller = player.GetComponent<PlayerController>();
                     GetComponent<GridClickMovement>();
-                    //GetComponent<OutlineToggle>();
+                    controller.Outline();
+                    firingCone = player.GetComponent<FiringCone>();
                     return;
                 }
+            }
+        }
+        if (target != null && player != null)
+        {
+            Vector3 roationDirection = target.transform.position - player.transform.position;
+
+            if (roationDirection != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(roationDirection);
+                player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+            firingCone.WeaponAiming();
+        }
+        else
+        {
+            if (target == null && player != null)
+            {
+                firingCone.WeaponResting();
             }
         }
     }

@@ -2,7 +2,9 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 using static UnityEngine.EventSystems.EventTrigger;
+using static UnityEngine.Rendering.HableCurve;
 using static UnityEngine.UI.Image;
 
 public class Weapon : MonoBehaviour
@@ -11,8 +13,13 @@ public class Weapon : MonoBehaviour
     public PlayerController playerController; //Actual player object
 
     [SerializeField] private GameObject target;
-    
 
+    //firing cone stuff
+    public FiringCone firingCone;
+    public int rng { get { return rayDistance; } }
+    public float acc { get { return Accuracy; } } 
+
+    //stats
     [SerializeField] private WeaponStats stats;
     [SerializeField] private PlayerStats playerStats;
 
@@ -27,14 +34,15 @@ public class Weapon : MonoBehaviour
     [SerializeField] private int Burst;
     [SerializeField] private int rayDistance;   //Range
 
+    //accuracy stuff
     [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
-
-
+    
     void Start()
     {
         player = FindFirstObjectByType<MasterPlayer>();
         playerController = GetComponent<PlayerController>();
+        firingCone = GetComponent<FiringCone>();
 
 
         Dexterity = playerStats.dex;
@@ -45,6 +53,8 @@ public class Weapon : MonoBehaviour
         ArmorPiercing = stats.ap;
         Burst = stats.burst;
         rayDistance = stats.raNge;
+
+        firingCone.WeaponSwap();
     }
 
     private void Update()
@@ -97,7 +107,6 @@ public class Weapon : MonoBehaviour
             {
                 Debug.Log("Hit an Environment!");
             }
-
         }
         else
         {
@@ -114,9 +123,9 @@ public class Weapon : MonoBehaviour
         return Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), playerController.transform.up) *
        Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), playerController.transform.right) *
        direction;
-
     }
 
+    
 
     private void switchweapons()
     {
