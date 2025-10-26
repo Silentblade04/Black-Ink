@@ -9,19 +9,23 @@ public class FiringCone : MonoBehaviour
     [SerializeField] private Weapon weapon;
     [SerializeField] private PlayerController playerController;
 
-    [SerializeField] private Material mat;
+    [SerializeField] private GameObject player; //must be manually assigned
+
+    [SerializeField] Material[] mats;
+
     void Start()
     {
         playerController = GetComponent<PlayerController>();
-        Material mat = firingCone.GetComponent<Material>();
-        mat.SetFloat("_Alpha", 0);
-        
+        WeaponResting();
     }
+
+
 
     public void WeaponSwap()
     {
+        Debug.Log("Weapon Swap");
         weapon = GetComponent<Weapon>();
-        if (weapon != null) {
+        if (weapon == null) {
             accuracy = 0;
             range = 0;
         }
@@ -34,22 +38,28 @@ public class FiringCone : MonoBehaviour
 
     public void WeaponAiming()
     {
-        mat.SetFloat("_Alpha", 0.1f);
+        Debug.Log("Weapon Aiming");
+        Material coneMaterial = mats[0];
+        coneMaterial.SetFloat("_Alpha", 0.1f);
+        WeaponSwap();
+
     }
 
     public void WeaponResting()
     {
-        mat.SetFloat("_Alpha", 0);
+        Debug.Log("Weapon Resting");
+        Material coneMaterial = mats[0];
+        coneMaterial.SetFloat("_Alpha", 0f);
     }
 
     void Update()
     {
-        firingCone.transform.localPosition = Vector3.zero;
-        firingCone.transform.localRotation = Quaternion.identity;
+        firingCone.transform.localPosition = new Vector3(0, 0, range/2);
 
         float endRadius = Mathf.Tan(accuracy * Mathf.Deg2Rad) * range;
         firingCone.transform.localScale = new Vector3(endRadius * 2, range, endRadius * 2);
 
 
     }
+
 }

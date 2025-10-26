@@ -22,7 +22,6 @@ public class MasterPlayer : MonoBehaviour
     [SerializeField] private PlayerController controller;
     [SerializeField] private EnemyAI enemyAI;
 
-    [SerializeField] private GameObject cone;
 
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform playerTransform;
@@ -95,15 +94,16 @@ public class MasterPlayer : MonoBehaviour
                 Quaternion targetRotation = Quaternion.LookRotation(roationDirection);
                 player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
+            firingCone.WeaponSwap();
             firingCone.WeaponAiming();
         }
         else
         {
-            if (target == null && player != null)
+            if (player != null)
             {
                 firingCone.WeaponResting();
+
             }
         }
     }
-    
 }
