@@ -22,6 +22,9 @@ public class MasterPlayer : MonoBehaviour
     [SerializeField] private PlayerController controller;
     [SerializeField] private EnemyAI enemyAI;
 
+    [SerializeField] private GridHighlighter gridHighlighter; // assign in inspector
+    [SerializeField] private int highlightDiameter = 10; // default 10 blocks across
+
 
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform playerTransform;
@@ -74,6 +77,7 @@ public class MasterPlayer : MonoBehaviour
                     {
                         player.GetComponent<PlayerController>().OutlineOff();
                     }
+                    GetComponent<GridClickMovement>();
                     player = hitInfo.collider.gameObject;
                     playerTransform = player.GetComponent<Transform>();
                     weapon = player.GetComponent<Weapon>();
@@ -81,6 +85,15 @@ public class MasterPlayer : MonoBehaviour
                     GetComponent<GridClickMovement>();
                     controller.Outline();
                     firingCone = player.GetComponent<FiringCone>();
+
+                    if (gridHighlighter != null)
+                    {
+                        gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("MasterPlayer: GridHighlighter not assigned.");
+                    }
                     return;
                 }
             }
@@ -102,7 +115,6 @@ public class MasterPlayer : MonoBehaviour
             if (player != null)
             {
                 firingCone.WeaponResting();
-
             }
         }
     }

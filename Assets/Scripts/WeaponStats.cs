@@ -15,7 +15,7 @@ public class WeaponStats : ScriptableObject
 
     [SerializeField] protected int damage;          //How much damage it does
     [SerializeField] protected int rounds;        //Amount of ammo before reloading
-    [SerializeField] protected float accuracy;      //Likely hood of hitting a target, multiplied by the characters accuracy/precision/dexterity
+    [SerializeField] protected float accuracy;      //Likely hood of hitting a target, multiplied by the characters accuracy/precision/dexterity, the lower the number the better. 
     [SerializeField] protected int armorPiercing; //level of armor it can go through
     [SerializeField] protected int burstNumber;   //# of rounds fired with each attack
     [SerializeField] protected int range;       //range

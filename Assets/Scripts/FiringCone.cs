@@ -23,7 +23,6 @@ public class FiringCone : MonoBehaviour
 
     public void WeaponSwap()
     {
-        Debug.Log("Weapon Swap");
         weapon = GetComponent<Weapon>();
         if (weapon == null) {
             accuracy = 0;
@@ -38,7 +37,6 @@ public class FiringCone : MonoBehaviour
 
     public void WeaponAiming()
     {
-        Debug.Log("Weapon Aiming");
         Material coneMaterial = mats[0];
         coneMaterial.SetFloat("_Alpha", 0.1f);
         WeaponSwap();
@@ -47,7 +45,6 @@ public class FiringCone : MonoBehaviour
 
     public void WeaponResting()
     {
-        Debug.Log("Weapon Resting");
         Material coneMaterial = mats[0];
         coneMaterial.SetFloat("_Alpha", 0f);
     }

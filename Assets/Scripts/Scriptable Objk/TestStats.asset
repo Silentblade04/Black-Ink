@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestStats
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   health: 1
-  actions: 1
+  actions: 2
   speed: 1
   strength: 1
   dexterity: 10

@@ -4451,6 +4451,8 @@ MonoBehaviour:
   player: {fileID: 0}
   controller: {fileID: 0}
   enemyAI: {fileID: 0}
+  gridHighlighter: {fileID: 2008333322}
+  highlightDiameter: 10
   weapon: {fileID: 0}
   playerTransform: {fileID: 0}
   rotationSpeed: 5

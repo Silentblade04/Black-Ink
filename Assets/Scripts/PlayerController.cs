@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
     public void ActionUsed(int actionCost)
     {
         fluxActions -= actionCost;
+        Debug.Log(fluxActions+" Actions Left");
     }
 
     public void Hit(int damage) //This function takes an integer.

@@ -14,16 +14,21 @@ public class GridClickMovement : MonoBehaviour
     private Vector3 currentTarget;        // Current position player is moving toward
     private bool isMoving = false;        // Whether the player is currently moving
 
+    [SerializeField] int actions;
+    [SerializeField] PlayerController controller;
     void Start()
     {
         rb = GetComponent<Rigidbody>();  // Cache Rigidbody component
         pathQueue = new Queue<Vector3>(); // Initialize path queue
         currentTarget = transform.position; // Start with current position as target
+        controller = GetComponent<PlayerController>();
     }
 
     void Update()
     {
+        actions = controller.actLeft;
         HandleMouseClick();               // Check for player input every frame
+        
     }
 
 
@@ -121,9 +126,16 @@ public class GridClickMovement : MonoBehaviour
     /// </summary>
     public void StartMovement()
     {
+        if (actions == 0)
+        {
+            Debug.Log("No Actions Left");
+            return;
+        }
+
         if (pathQueue.Count > 0)
         {
             isMoving = true; // Begin continuous movement
+            controller.ActionUsed(1);
         }
     }
 
