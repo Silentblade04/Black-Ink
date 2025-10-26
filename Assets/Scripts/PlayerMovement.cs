@@ -12,6 +12,7 @@ public class GridClickMovement : MonoBehaviour
     private Rigidbody rb;                 // Rigidbody component reference
     private Queue<Vector3> pathQueue;     // Queue storing all positions along the path
     private Vector3 currentTarget;        // Current position player is moving toward
+    private bool isMoving = false;        // Whether the player is currently moving
 
     void Start()
     {
@@ -25,6 +26,15 @@ public class GridClickMovement : MonoBehaviour
         HandleMouseClick();               // Check for player input every frame
     }
 
+
+    void FixedUpdate()
+    {
+        // Only move if movement is active
+        if (isMoving)
+        {
+            ContinueMovement();
+        }
+    }
     /// <summary>
     /// Detects left mouse clicks and calculates path to clicked grid location
     /// </summary>
@@ -107,32 +117,47 @@ public class GridClickMovement : MonoBehaviour
     }
 
     /// <summary>
-    /// Moves the player along the queued path using Rigidbody
+    /// Called by UI Button to start moving along the queued path
     /// </summary>
-    public void MoveAlongPath()
+    public void StartMovement()
     {
-        if (currentTarget == null) return; // No target to move toward
+        if (pathQueue.Count > 0)
+        {
+            isMoving = true; // Begin continuous movement
+        }
+    }
 
-        Vector3 direction = (currentTarget - transform.position).normalized; // Calculate direction
-        direction.y = 0; // Ensure horizontal movement only
+    /// <summary>
+    /// Handles actual per-frame movement logic while isMoving = true
+    /// </summary>
+    void ContinueMovement()
+    {
+        Vector3 direction = (currentTarget - transform.position).normalized;
+        direction.y = 0;
 
         float distance = Vector3.Distance(transform.position, currentTarget);
 
+        // When close enough to the current step, snap to it
         if (distance < stopDistance)
         {
-            // Snap exactly to current target
             transform.position = currentTarget;
 
-            // Move to next step if available
+            // Move to next target if available
             if (pathQueue.Count > 0)
+            {
                 currentTarget = pathQueue.Dequeue();
-            return;
+            }
+            else
+            {
+                // End of path reached
+                isMoving = false;
+                return;
+            }
         }
 
-        // Move Rigidbody toward current target
+        // Move and face direction
         rb.MovePosition(transform.position + direction * moveSpeed * Time.fixedDeltaTime);
 
-        // Optional: rotate player to face movement direction
         if (direction != Vector3.zero)
         {
             Quaternion targetRot = Quaternion.LookRotation(direction);

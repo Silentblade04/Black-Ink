@@ -152,7 +152,7 @@ MonoBehaviour:
   enemies: []
   players: []
   actionAmount: 0
-  turnSystem: {fileID: 0}
+  turnSystem: {fileID: 97843969}
 --- !u!4 &97843968
 Transform:
   m_ObjectHideFlags: 0
@@ -536,8 +536,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -651,7 +651,7 @@ Transform:
   m_GameObject: {fileID: 205957847}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.138, y: 1.797, z: -4.815}
+  m_LocalPosition: {x: 3, y: 2, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1554,7 +1554,7 @@ Transform:
   m_GameObject: {fileID: 697461606}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.59, y: 1.797, z: 2.84}
+  m_LocalPosition: {x: 3, y: 2, z: 3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2779,6 +2779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Moving
   myButton: {fileID: 1208329226}
   player: {fileID: 2017359739}
+  gridHighlighter: {fileID: 2008333322}
 --- !u!114 &1208329226
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3450,7 +3451,7 @@ Transform:
   m_GameObject: {fileID: 1780208947}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.826, y: 1.797, z: -4.593}
+  m_LocalPosition: {x: -6, y: 2, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3887,6 +3888,92 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1988172518}
   m_CullTransparentMesh: 1
+--- !u!1 &2008333318
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2008333320}
+  - component: {fileID: 2008333319}
+  - component: {fileID: 2008333321}
+  - component: {fileID: 2008333322}
+  m_Layer: 0
+  m_Name: GridManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2008333319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008333318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb50874aff9123748aa4c14273c82d7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridVisualizer
+  gridWidth: 30
+  gridHeight: 30
+  cellSize: 1
+  gridColor: {r: 1, g: 1, b: 1, a: 1}
+  gridOrigin: {x: -14.5, y: 1, z: -15.5}
+  showInEditor: 1
+--- !u!4 &2008333320
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008333318}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2008333321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008333318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8bba63642e959da4c88354229481b2b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridRenderer
+  gridWidth: 20
+  gridHeight: 20
+  cellSize: 1
+  gridColor: {r: 0, g: 0, b: 0, a: 0}
+  gridY: 1.1
+--- !u!114 &2008333322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2008333318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc93176c26469e341a659ed07d5687bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridHighlighter
+  tilePrefab: {fileID: 6045253764774501982, guid: 5457e46f5426dfd4794db826a78a6217, type: 3}
+  cellSize: 1
+  poolParent: {fileID: 0}
+  initialPool: 100
+  useEuclidean: 1
 --- !u!1 &2017359737
 GameObject:
   m_ObjectHideFlags: 0
