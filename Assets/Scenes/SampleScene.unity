@@ -691,6 +691,7 @@ MonoBehaviour:
     m_Bits: 0
   mats: []
   rend: {fileID: 0}
+  cone: {fileID: 0}
 --- !u!54 &205957854
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1416,6 +1417,7 @@ MonoBehaviour:
     m_Bits: 0
   mats: []
   rend: {fileID: 0}
+  cone: {fileID: 0}
 --- !u!54 &697461613
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3516,6 +3518,7 @@ MonoBehaviour:
     m_Bits: 0
   mats: []
   rend: {fileID: 0}
+  cone: {fileID: 0}
 --- !u!136 &1611432971
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3915,6 +3918,7 @@ MonoBehaviour:
     m_Bits: 0
   mats: []
   rend: {fileID: 0}
+  cone: {fileID: 0}
 --- !u!54 &1780208954
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3994,7 +3998,7 @@ MonoBehaviour:
   rayDistance: 0
   hitLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 4294967295
 --- !u!136 &1943211278
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4131,6 +4135,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridClickMovement
   moveSpeed: 5
   stopDistance: 1
+  actions: 0
+  controller: {fileID: 0}
 --- !u!54 &1943211284
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4447,6 +4453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MasterPlayer
   firingCone: {fileID: 0}
+  fired: 0
   target: {fileID: 0}
   player: {fileID: 0}
   controller: {fileID: 0}

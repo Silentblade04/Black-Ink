@@ -37,6 +37,7 @@ public class Weapon : MonoBehaviour
     //accuracy stuff
     [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
+
     
     void Start()
     {
@@ -99,7 +100,7 @@ public class Weapon : MonoBehaviour
                 EnemyAI enemy = hit.collider.GetComponent<EnemyAI>();
                 if (enemy != null)
                 {
-                    enemy.Hit(Damage);
+                    enemy.Hit(Damage, firingCone);
                 }
 
             }

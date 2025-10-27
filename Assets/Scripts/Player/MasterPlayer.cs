@@ -14,6 +14,7 @@ public class MasterPlayer : MonoBehaviour
     public GameObject trg { get { return target; } }
 
     public FiringCone firingCone;
+    [SerializeField] private bool fired;
 
 
     [SerializeField] private GameObject target; //The target of an action like shoot
@@ -109,10 +110,11 @@ public class MasterPlayer : MonoBehaviour
             }
             firingCone.WeaponSwap();
             firingCone.WeaponAiming();
+            return;
         }
         else
         {
-            if (player != null)
+            if (player != null && target == null)
             {
                 firingCone.WeaponResting();
             }

@@ -44,6 +44,8 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     [SerializeField] Material[] mats;
     [SerializeField] private Renderer rend;
 
+    [SerializeField] private FiringCone cone;
+
 
     private void Start()
     {
@@ -129,14 +131,15 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 
     }
 
-    public void Hit(int damage) //This function takes an integer.
+    public void Hit(int damage, FiringCone cone) //This function takes an integer.
     {
+        cone.WeaponResting();
         health -= damage;
         Debug.Log("Took Damage");
         if (health <= 0)
         {
-            gameObject.SetActive(false);
             Debug.Log("I am Dead");
+            Destroy(gameObject);
         }
     }
     // -----------------------------------------------------------
@@ -150,12 +153,16 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 
         // Start a coroutine to simulate some "thinking time"
         // before the AI takes its action.
-        StartCoroutine(DoEnemyAction());
+        if (gameObject != null)
+        {
+            StartCoroutine(DoEnemyAction());
+        }
     }
 
     // Coroutine to simulate AI delay and perform an action.
     private IEnumerator DoEnemyAction()
     {
+
         // This is the section that Would be changed as we want to change what the AI does during their turn
         // Wait for 1 second to simulate calculation or animation delay
         yield return new WaitForSeconds(1f);
