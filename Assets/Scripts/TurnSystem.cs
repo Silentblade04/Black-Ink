@@ -1,6 +1,7 @@
 using System.Collections.Generic;         // Allows us to use List<T> to store actors
 using UnityEngine;
-using UnityEngine.InputSystem;            // Needed to use the new Input System (Keyboard class)
+using UnityEngine.InputSystem;
+using UnityEngine.Rendering;            // Needed to use the new Input System (Keyboard class)
 
 public class TurnSystem : MonoBehaviour
 {
@@ -42,6 +43,8 @@ public class TurnSystem : MonoBehaviour
     // Awake() is called when the GameObject is first loaded.
     // Here we convert any MonoBehaviours in actorComponents into ITurnActor
     // and populate the turnOrder list.
+    
+
     private void Awake()
     {
         foreach (var comp in actorComponents)
@@ -76,20 +79,36 @@ public class TurnSystem : MonoBehaviour
     private void BeginCurrentTurn()
     {
         ITurnActor current = turnOrder[currentTurnIndex]; // Get the current actor
-        if (currentTurnIndex == 0)
+        try
         {
-            playerTurn = true;
+            if (current == null)
+            {
+                Debug.Log("We got em");
+            }
+            if (currentTurnIndex == 0)
+            {
+                playerTurn = true;
+            }
+            else
+            {
+                playerTurn = false;
+            }
+            if (currentTurnIndex == 0)
+            {
+                masterList.OnTurnStart();
+            }
+            Debug.Log($"--- {current.Name}'s Turn ---");       // Log for debugging
+            current.StartTurn();
         }
-        else
+        catch
         {
-            playerTurn= false;
+            Debug.Log("Something went wrong, ending turn");
+            EndTurn();
         }
-        if (currentTurnIndex == 0)
+        finally
         {
-            masterList.OnTurnStart();
+            Debug.Log("Everything finalised");
         }
-        Debug.Log($"--- {current.Name}'s Turn ---");       // Log for debugging
-        current.StartTurn();                               // Tell the actor to start their turn\
 
     }
 
@@ -104,7 +123,7 @@ public class TurnSystem : MonoBehaviour
         // Advance to the next actor in the list.
         // The modulo (%) wraps back to 0 after reaching the last actor.
         currentTurnIndex = (currentTurnIndex + 1) % turnOrder.Count;
-
+        
         // Start the next actor’s turn.
         BeginCurrentTurn();
     }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using static UnityEngine.GraphicsBuffer;
+using Unity.VisualScripting;
 
 public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 {
@@ -44,6 +45,8 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
     [SerializeField] Material[] mats;
     [SerializeField] private Renderer rend;
+
+    [SerializeField] private TurnSystem turnsystem;
 
 
     private void Start()
@@ -163,6 +166,7 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         {
             StartCoroutine(DoEnemyAction());
         }
+        
     }
 
     // Coroutine to simulate AI delay and perform an action.
