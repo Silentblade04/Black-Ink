@@ -15,7 +15,8 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     public string Name => "Enemy AI";
 
     [SerializeField] private GameObject target;
-    [SerializeField] private GameObject controller;
+    [SerializeField] private Transform controller;
+    [SerializeField] private GameObject player;
 
     //Gives enemies their stats
     [SerializeField] protected int health;
@@ -38,18 +39,16 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     [SerializeField] private PlayerStats characterStats;
     [SerializeField] private WeaponStats stats;
 
+    //shooting stuff
     [SerializeField] private object deviationAngle; // The angle of deviation
     [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
-
     [SerializeField] Material[] mats;
     [SerializeField] private Renderer rend;
-
-    [SerializeField] private FiringCone cone;
 
 
     private void Start()
     {
-
+        controller = GetComponent<Transform>();
 
         health = characterStats.hp;
         actions = characterStats.act;
@@ -58,6 +57,13 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         dexterity = characterStats.dex;
         perception = characterStats.precep;
         charisma = characterStats.chr;
+
+        Damage = stats.dmg;
+        Rounds = stats.rnd;
+        Accuracy = stats.acc * dexterity;
+        ArmorPiercing = stats.ap;
+        Burst = stats.burst;
+        rayDistance = stats.raNge;
 
         rend = GetComponent<Renderer>();
         // Make sure the object has a renderer
@@ -78,7 +84,7 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         }
     }
 
-    public void shoot()
+    public void shoot(GameObject target)
     {
 
         Debug.Log("Shooting");
@@ -170,6 +176,10 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         // Pick a random number between 1 and 5 inclusive
         int action = Random.Range(1, 6);  // ✅ Produces 1–5 inclusive
         Debug.Log($"{Name} chose action #{action}");
+        if (action == 1)
+        {
+            shoot(player);
+        }
 
         // Notify the TurnSystem that the enemy has finished its turn.
         // Using the modern method to find the TurnSystem in the scene.

@@ -10,9 +10,12 @@ public class MasterList : MonoBehaviour
     [SerializeField] private List<EnemyAI> enemies = new List<EnemyAI>();
     [SerializeField] private List<PlayerController> players = new List<PlayerController>();
 
+
     [SerializeField] private int actionAmount;
 
     [SerializeField] private TurnSystem turnSystem;
+
+    [SerializeField] private MasterAI masterAI;
 
     [System.Obsolete] //idk it yells at me without this
 
@@ -35,6 +38,8 @@ public class MasterList : MonoBehaviour
         }
         Debug.Log("Found " + enemies.Count + " Enemy components.");
         Debug.Log("Found " + players.Count + " Player components.");
+
+        
     }
 
     public void OnTurnStart()

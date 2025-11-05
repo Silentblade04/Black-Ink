@@ -153,6 +153,7 @@ MonoBehaviour:
   players: []
   actionAmount: 0
   turnSystem: {fileID: 97843969}
+  masterAI: {fileID: 1045365926}
 --- !u!4 &97843968
 Transform:
   m_ObjectHideFlags: 0
@@ -185,7 +186,9 @@ MonoBehaviour:
   actorComponents:
   - {fileID: 2017359740}
   - {fileID: 205957853}
-  - {fileID: 205957853}
+  - {fileID: 1780208953}
+  - {fileID: 1611432970}
+  - {fileID: 697461612}
 --- !u!1 &187730697
 GameObject:
   m_ObjectHideFlags: 0
@@ -555,6 +558,7 @@ GameObject:
   - component: {fileID: 205957848}
   - component: {fileID: 205957853}
   - component: {fileID: 205957854}
+  - component: {fileID: 205957855}
   m_Layer: 6
   m_Name: Target
   m_TagString: Enemy
@@ -670,7 +674,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   target: {fileID: 0}
-  controller: {fileID: 0}
+  controller: {fileID: 205957851}
+  player: {fileID: 1943211276}
   health: 0
   actions: 0
   speed: 0
@@ -688,10 +693,9 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: 983a3d0dd4b93a8438ca15d2b616d35b, type: 2}
   hitLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   mats: []
   rend: {fileID: 0}
-  cone: {fileID: 0}
 --- !u!54 &205957854
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -719,6 +723,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &205957855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 205957847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca09f945bafeec446b186d429f3980c0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CaptainAI
 --- !u!1 &218556245
 GameObject:
   m_ObjectHideFlags: 0
@@ -1396,7 +1412,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   target: {fileID: 0}
-  controller: {fileID: 0}
+  controller: {fileID: 697461611}
+  player: {fileID: 1943211276}
   health: 0
   actions: 0
   speed: 0
@@ -1414,10 +1431,9 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: 983a3d0dd4b93a8438ca15d2b616d35b, type: 2}
   hitLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   mats: []
   rend: {fileID: 0}
-  cone: {fileID: 0}
 --- !u!54 &697461613
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1793,6 +1809,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DebugLogToUI
   logText: {fileID: 928660436}
   maxLines: 20
+--- !u!1 &1045365924
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1045365925}
+  - component: {fileID: 1045365926}
+  m_Layer: 0
+  m_Name: MasterAI
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1045365925
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1045365924}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.82543, y: 1.30135, z: 2.57566}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1045365926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1045365924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 277396fe8bc0f8145ba979ecd478923a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MasterAI
+  captains: []
 --- !u!43 &1161067855
 Mesh:
   m_ObjectHideFlags: 0
@@ -3497,7 +3558,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   target: {fileID: 0}
-  controller: {fileID: 0}
+  controller: {fileID: 1611432974}
+  player: {fileID: 1943211276}
   health: 0
   actions: 0
   speed: 0
@@ -3515,10 +3577,9 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: 983a3d0dd4b93a8438ca15d2b616d35b, type: 2}
   hitLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   mats: []
   rend: {fileID: 0}
-  cone: {fileID: 0}
 --- !u!136 &1611432971
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3897,7 +3958,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAI
   target: {fileID: 0}
-  controller: {fileID: 0}
+  controller: {fileID: 1780208952}
+  player: {fileID: 1943211276}
   health: 0
   actions: 0
   speed: 0
@@ -3915,10 +3977,9 @@ MonoBehaviour:
   stats: {fileID: 11400000, guid: 983a3d0dd4b93a8438ca15d2b616d35b, type: 2}
   hitLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   mats: []
   rend: {fileID: 0}
-  cone: {fileID: 0}
 --- !u!54 &1780208954
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4586,3 +4647,4 @@ SceneRoots:
   - {fileID: 2135570301}
   - {fileID: 1703632763}
   - {fileID: 2008333320}
+  - {fileID: 1045365925}
