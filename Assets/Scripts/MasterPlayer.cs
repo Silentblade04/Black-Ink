@@ -23,6 +23,10 @@ public class MasterPlayer : MonoBehaviour
     [SerializeField] private EnemyAI enemyAI;
 
     [SerializeField] private GameObject cone;
+    [SerializeField] private GridHighlighter gridHighlighter; // assign in inspector
+    [SerializeField] private int highlightDiameter = 10; // default 10 blocks across
+    [SerializeField] private ClassManager classManager;
+
 
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform playerTransform;
