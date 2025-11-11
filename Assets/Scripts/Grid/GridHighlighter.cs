@@ -120,6 +120,34 @@ public class GridHighlighter : MonoBehaviour
     }
 
     /// <summary>
+    /// Show exactly one highlighted tile at the given world position (snaps to grid).
+    /// This deactivates any other active pooled tiles so only a single cell is highlighted.
+    /// </summary>
+    public void ShowSingleAt(Vector3 worldPosition)
+    {
+        if (tilePrefab == null)
+            return;
+
+        // snap to integer-aligned grid
+        int x = Mathf.RoundToInt(worldPosition.x / cellSize);
+        int z = Mathf.RoundToInt(worldPosition.z / cellSize);
+
+        // deactivate all tiles first
+        foreach (var t in pool)
+            t.SetActive(false);
+
+        // get a tile and activate it at the snapped position
+        var tile = GetTileFromPool();
+        if (tile == null) return;
+
+        tile.SetActive(true);
+        Vector3 pos = new Vector3(x * cellSize, 0f, z * cellSize);
+        tile.transform.position = pos + new Vector3(0f, 1.01f, 0f);
+        tile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        tile.transform.localScale = Vector3.one * cellSize;
+    }
+
+    /// <summary>
     /// Hide all highlights.
     /// </summary>
     public void Hide()
