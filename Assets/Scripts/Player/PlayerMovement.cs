@@ -16,21 +16,27 @@ public class GridClickMovement : MonoBehaviour
 
     [SerializeField] int actions;
     [SerializeField] PlayerController controller;
+
+    // Reference to the GridHighlighter (assign in inspector or it will auto-find)
+    public GridHighlighter gridHighlighter;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();  // Cache Rigidbody component
         pathQueue = new Queue<Vector3>(); // Initialize path queue
         currentTarget = transform.position; // Start with current position as target
         controller = GetComponent<PlayerController>();
+
+        // Auto-find highlighter if not assigned in inspector
+        if (gridHighlighter == null)
+            gridHighlighter = FindObjectOfType<GridHighlighter>();
     }
 
     void Update()
     {
         actions = controller.actLeft;
         HandleMouseClick();               // Check for player input every frame
-        
     }
-
 
     void FixedUpdate()
     {
@@ -40,6 +46,7 @@ public class GridClickMovement : MonoBehaviour
             ContinueMovement();
         }
     }
+
     /// <summary>
     /// Detects left mouse clicks and calculates path to clicked grid location
     /// </summary>
@@ -51,6 +58,7 @@ public class GridClickMovement : MonoBehaviour
             {
                 return; // Skip selection
             }
+
             // Cast a ray from the camera through the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -63,14 +71,17 @@ public class GridClickMovement : MonoBehaviour
                     Mathf.Round(hit.point.z)
                 );
 
-                
+                // Highlight only the selected tile (if highlighter present)
+                if (gridHighlighter != null)
+                {
+                    gridHighlighter.ShowSingleAt(targetPos);
+                }
+
                 // Generate path using diagonal first, then straight moves
                 GeneratePath(transform.position, targetPos);
             }
         }
     }
-
-
 
     /// <summary>
     /// Generates a path from start to end using diagonal (45°) moves first, then straight (90°)
@@ -136,6 +147,10 @@ public class GridClickMovement : MonoBehaviour
         {
             isMoving = true; // Begin continuous movement
             controller.ActionUsed(1);
+
+            // NEW: clear the single-tile highlight immediately when movement starts
+            if (gridHighlighter != null)
+                gridHighlighter.Hide();
         }
     }
 
