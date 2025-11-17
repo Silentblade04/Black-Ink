@@ -79,11 +79,14 @@ public class PlayerCamera : MonoBehaviour
 
     void HandleRotation()
     {
-        if (Input.GetMouseButton(2)) // middle mouse button
-        {
-            float rotX = Input.GetAxis("Mouse X") * rotateSpeed * Time.deltaTime;
-            transform.Rotate(Vector3.up, rotX, Space.World);
-        }
+        float rotate = 0f;
+
+        if (Input.GetKey(KeyCode.Q))
+            rotate = -1f;
+        if (Input.GetKey(KeyCode.E))
+            rotate = 1f;
+
+        transform.Rotate(Vector3.up, rotate * rotateSpeed * Time.deltaTime, Space.World);
     }
     void ClampPosition()
     {
