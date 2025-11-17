@@ -2,15 +2,11 @@ using UnityEngine;
 
 public class CaptainAI : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private EnemyAI baseAI;
 
-    // Update is called once per frame
-    void Update()
+
+    private void Start()
     {
-        
+        baseAI = GetComponent<EnemyAI>();
     }
 }

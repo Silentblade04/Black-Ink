@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using static UnityEngine.GraphicsBuffer;
 using Unity.VisualScripting;
+using System.Collections.Generic;
 
 public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 {
@@ -15,9 +16,17 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 
     public string Name => "Enemy AI";
 
-    [SerializeField] private GameObject target;
-    [SerializeField] private Transform controller;
-    [SerializeField] private GameObject player;
+    [SerializeField] private MasterList list;
+    [SerializeField] private List<PlayerController> playerList;
+
+    //Sends the enemy stats
+    public int hp { get { return health; } } //this lets other scripts get the damage of this weapon without being able to change it
+    public int ap { get { return actions; } }
+    public float spd { get { return speed; } }
+    public int stgth { get { return strength; } }
+    public float dex { get { return dexterity; } }
+    public int perc { get { return perception; } }
+    public int chr { get { return charisma; } }
 
     //Gives enemies their stats
     [SerializeField] protected int health;
@@ -28,21 +37,17 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
     [SerializeField] protected int perception;
     [SerializeField] protected int charisma;
 
-    //Enemy Weapon Stats
-    [SerializeField] private int Damage;
-    [SerializeField] private int Rounds;
-    [SerializeField] private float Accuracy; // = dexterity times the accuracy stat of the weapon
-    [SerializeField] private int ArmorPiercing;
-    [SerializeField] private int Burst;
-    [SerializeField] private int rayDistance;   //Range
-
     //where the stats come from
     [SerializeField] private PlayerStats characterStats;
     [SerializeField] private WeaponStats stats;
 
+    //Scripts
+    [SerializeField] private EnemyMovement enemyMovement;
+    [SerializeField] private EnemyShooting enemyShooting;
+    [SerializeField] private EnemyStates enemyStates;
+
+
     //shooting stuff
-    [SerializeField] private object deviationAngle; // The angle of deviation
-    [SerializeField] private LayerMask hitLayers;      // Layers the ray can hit
     [SerializeField] Material[] mats;
     [SerializeField] private Renderer rend;
 
@@ -51,7 +56,9 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
 
     private void Start()
     {
-        controller = GetComponent<Transform>();
+        enemyMovement = GetComponent<EnemyMovement>();
+        enemyShooting = GetComponent<EnemyShooting>();
+        enemyStates = GetComponent<EnemyStates>();
 
         health = characterStats.hp;
         actions = characterStats.act;
@@ -60,13 +67,6 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         dexterity = characterStats.dex;
         perception = characterStats.precep;
         charisma = characterStats.chr;
-
-        Damage = stats.dmg;
-        Rounds = stats.rnd;
-        Accuracy = stats.acc * dexterity;
-        ArmorPiercing = stats.ap;
-        Burst = stats.burst;
-        rayDistance = stats.raNge;
 
         rend = GetComponent<Renderer>();
         // Make sure the object has a renderer
@@ -85,59 +85,12 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         {
             Debug.LogWarning("No Renderer found on " + gameObject.name);
         }
-    }
-
-    public void shoot(GameObject target)
-    {
-
-        Debug.Log("Shooting");
-        if (target == null)
-        {
-            Debug.Log("No target");
-            return;
-        }
-        Vector3 direction = (target.transform.position - controller.transform.position).normalized;
-
-        Vector3 deviatedDirection = ApplyDeviation(direction, Accuracy);
-
-        // Fire the ray
-        if (Physics.Raycast(controller.transform.position, deviatedDirection, out RaycastHit hit, rayDistance, hitLayers))
-        {
-            Debug.DrawLine(controller.transform.position, hit.point, Color.red, 15f);
-
-            if (hit.collider.CompareTag("Player")) //For when they shoot at us
-            {
-                Debug.Log("Hit an enemy!");
-                PlayerController player = hit.collider.GetComponent<PlayerController>();
-                if (player != null)
-                {
-                    player.Hit(Damage);
-                }
-
-            }
-            else if (hit.collider.CompareTag("Environment"))
-            {
-                Debug.Log("Hit an Environment!");
-            }
-
-        }
-        else
-        {
-            Debug.DrawRay(controller.transform.position, deviatedDirection * rayDistance, Color.yellow, 15f);
-            Debug.Log("Ray missed.");
-        }
-
 
     }
 
-    Vector3 ApplyDeviation(Vector3 direction, float Accuracy)
+    public void Update()
     {
-        Debug.Log("math stuff");
-        // Get a random direction inside a cone
-        return Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), controller.transform.up) *
-       Quaternion.AngleAxis(UnityEngine.Random.Range(-Accuracy, Accuracy), controller.transform.right) *
-       direction;
-
+        
     }
 
     public void Hit(int damage, FiringCone cone) //This function takes an integer.
@@ -182,7 +135,11 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         Debug.Log($"{Name} chose action #{action}");
         if (action == 1)
         {
-            shoot(player);
+            enemyShooting.callshoot();
+        }
+        if (action == 2)
+        {
+            enemyShooting.callshoot();
         }
 
         // Notify the TurnSystem that the enemy has finished its turn.

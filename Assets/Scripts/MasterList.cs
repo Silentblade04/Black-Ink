@@ -7,15 +7,14 @@ using UnityEngine;
 //Some help from chatGPT
 public class MasterList : MonoBehaviour
 {
-    [SerializeField] private List<EnemyAI> enemies = new List<EnemyAI>();
-    [SerializeField] private List<PlayerController> players = new List<PlayerController>();
+    public List<EnemyAI> enemies = new List<EnemyAI>();
+    public List<PlayerController> players = new List<PlayerController>();
 
 
     [SerializeField] private int actionAmount;
 
     [SerializeField] private TurnSystem turnSystem;
 
-    [SerializeField] private MasterAI masterAI;
 
     [System.Obsolete] //idk it yells at me without this
 
