@@ -6,8 +6,6 @@ public class PlayerCamera : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 20f;
     [SerializeField] private float fastMoveMultiplier = 2f;
-    [SerializeField] private float edgeScrollSpeed = 10f;
-    [SerializeField] private float edgeThickness = 20f;
 
     [Header("Zoom")]
     [SerializeField] private Camera cam;
@@ -31,7 +29,6 @@ public class PlayerCamera : MonoBehaviour
     void Update()
     {
         HandleKeyboardMovement();
-        HandleEdgeScrolling();
         HandleZoom();
         HandleRotation();
 
@@ -40,35 +37,29 @@ public class PlayerCamera : MonoBehaviour
 
     void HandleKeyboardMovement()
     {
-        float h = Input.GetAxis("Horizontal");
-        float v = Input.GetAxis("Vertical");
+        float h = Input.GetAxis("Horizontal");  // A/D
+        float v = Input.GetAxis("Vertical");    // W/S
 
-        Vector3 dir = new Vector3(h, 0, v);
+        // Get the camera’s forward and right (flattened)
+        Vector3 forward = cam.transform.forward;
+        Vector3 right = cam.transform.right;
+
+        forward.y = 0;
+        right.y = 0;
+
+        forward.Normalize();
+        right.Normalize();
+
+        // Combine input with camera directions
+        Vector3 direction = (forward * v + right * h).normalized;
 
         float speed = moveSpeed;
         if (Input.GetKey(KeyCode.LeftShift))
             speed *= fastMoveMultiplier;
 
-        transform.Translate(dir * speed * Time.deltaTime, Space.World);
+        transform.Translate(direction * speed * Time.deltaTime, Space.World);
+
     }
-
-    void HandleEdgeScrolling()
-    {
-        Vector3 move = Vector3.zero;
-        Vector3 mousePos = Input.mousePosition;
-
-        if (mousePos.x < edgeThickness)
-            move.x -= edgeScrollSpeed;
-        if (mousePos.x > Screen.width - edgeThickness)
-            move.x += edgeScrollSpeed;
-        if (mousePos.y < edgeThickness)
-            move.z -= edgeScrollSpeed;
-        if (mousePos.y > Screen.height - edgeThickness)
-            move.z += edgeScrollSpeed;
-
-        transform.Translate(move * Time.deltaTime, Space.World);
-    }
-
     void HandleZoom()
     {
         float scroll = Input.GetAxis("Mouse ScrollWheel");

@@ -107,6 +107,13 @@ public class Weapon : MonoBehaviour
             else if (hit.collider.CompareTag("Environment"))
             {
                 Debug.Log("Hit an Environment!");
+                Environment environment = hit.collider.GetComponent<Environment>();
+
+                if (environment != null)
+                {
+                    environment.passthrough(ArmorPiercing, this, hit, deviatedDirection);
+                    environment.hit(ArmorPiercing);                    
+                }
             }
         }
         else
@@ -115,6 +122,34 @@ public class Weapon : MonoBehaviour
             Debug.Log("Ray missed.");
         }
 
+    }
+
+    public void passthrough(RaycastHit hit, Vector3 deviatedDirection)
+    {
+        Debug.Log("Calling passthrough");
+
+        Vector3 newStart = hit.point + deviatedDirection * 0.01f;
+
+        if (Physics.Raycast(newStart, deviatedDirection, out RaycastHit hit2, rayDistance, hitLayers))
+        {
+            // Correct debug line — start from newStart or hit.point
+            Debug.DrawLine(hit.point, hit2.point, Color.red, 15f);
+
+            // Use hit2, not hit
+            if (hit2.collider.CompareTag("Enemy"))
+            {
+                Debug.Log("Hit an enemy again!");
+                EnemyAI enemy = hit2.collider.GetComponent<EnemyAI>();
+                if (enemy != null)
+                {
+                    enemy.Hit(Damage, firingCone);
+                }
+            }
+            else if (hit2.collider.CompareTag("Environment"))
+            {
+                Debug.Log("Hit an environment again!");
+            }
+        }
     }
 
     Vector3 ApplyDeviation(Vector3 direction, float Accuracy)

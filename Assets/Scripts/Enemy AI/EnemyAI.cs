@@ -119,6 +119,10 @@ public class EnemyAI : MonoBehaviour, TurnSystem.ITurnActor
         {
             StartCoroutine(DoEnemyAction());
         }
+        else
+        {
+            EndTurn();
+        }
         
     }
 
