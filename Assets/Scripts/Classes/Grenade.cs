@@ -68,7 +68,7 @@ public class Grenade : MonoBehaviour
             // make the grid highlighter show area centered on the hit point
             if (gridHighlighter != null)
             {
-                gridHighlighter.ShowAreaAt(lastTargetPoint, diameter);
+                gridHighlighter.ShowAreaAt(lastTargetPoint, diameter, GridHighlighter.HighlightType.Action);
             }
         }
         else
@@ -128,7 +128,7 @@ public class Grenade : MonoBehaviour
         {
             lastTargetPoint = hitInfo.point;
             hasValidTarget = true;
-            gridHighlighter.ShowAreaAt(lastTargetPoint, diameter);
+            gridHighlighter.ShowAreaAt(lastTargetPoint, diameter, GridHighlighter.HighlightType.Action);
         }
         else
         {

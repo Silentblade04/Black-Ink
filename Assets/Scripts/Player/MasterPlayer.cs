@@ -89,7 +89,7 @@ public class MasterPlayer : MonoBehaviour
 
                     if (gridHighlighter != null)
                     {
-                        gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter);
+                        gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter, GridHighlighter.HighlightType.Action);
                     }
                     else
                     {

@@ -2,157 +2,217 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Turns on a set of highlight tiles around a center cell. Designed for integer-aligned grids.
-/// Attach to a scene object and assign a highlight tile prefab (e.g. Quad scaled to 1x1 with transparent material).
+/// With GPT Assistance
+/// Does not compute movement or ability ranges —
+/// Displays whatever tiles you request.
 /// </summary>
 public class GridHighlighter : MonoBehaviour
 {
-    [Tooltip("Prefab for a single highlighted cell. Should be a flat quad or plane sized to 1x1 (or normalized with cellSize).")]
-    public GameObject tilePrefab;
-
-    [Tooltip("Distance between grid cells. Should match your grid cell size (1 for integer-aligned).")]
+    // ------------------------------
+    //      PUBLIC SETTINGS
+    // ------------------------------
+    
+    [Header("Tile Settings")]
     public float cellSize = 1f;
 
-    [Tooltip("Parent for pooled tiles (optional).")]
-    public Transform poolParent;
+    [Header("Grid Height")]
+public float highlightHeight = 0.02f;   // height offset for all highlight tiles
 
-    [Tooltip("Maximum number of pooled tiles to create initially.")]
-    public int initialPool = 100;
+    [Tooltip("Prefab for highlight tiles (must be a flat quad or similar).")]
+    public GameObject highlightTilePrefab;
 
-    [Tooltip("Should the highlight use Euclidean radius (round) or Manhattan (diamond) selection?")]
-    public bool useEuclidean = true;
+    [Header("Tile Colors / Materials")]
+    public Material moveMaterial;
+    public Material abilityMaterial;
+    public Material selectedMaterial;
+    public Material dangerMaterial;
+    public Material actionMaterial;
 
-    // pooling
-    private readonly List<GameObject> pool = new List<GameObject>();
+    // ------------------------------
+    //      INTERNAL POOLS
+    // ------------------------------
+
+    public enum HighlightType
+    {
+        Move,
+        Ability,
+        Selected,
+        Danger,
+        Action
+    }
+
+    private class TilePool
+    {
+        public readonly List<GameObject> tiles = new List<GameObject>();
+        public int activeCount = 0;
+    }
+
+    private Dictionary<HighlightType, TilePool> pools = new Dictionary<HighlightType, TilePool>();
+
+    // ------------------------------
+    //      UNITY LIFECYCLE
+    // ------------------------------
 
     private void Awake()
     {
-        if (poolParent == null)
-            poolParent = transform;
-
-        // pre-warm pool
-        for (int i = 0; i < initialPool; i++)
-            pool.Add(CreatePooledTile(false));
+        foreach (HighlightType type in System.Enum.GetValues(typeof(HighlightType)))
+            pools[type] = new TilePool();
     }
 
-    private GameObject CreatePooledTile(bool active = false)
+    // ------------------------------
+    //      PUBLIC HIGHLIGHT API
+    // ------------------------------
+
+    /// <summary>
+    /// Highlights all tiles in the provided list (movement, etc.)
+    /// </summary>
+    public void ShowMoveRange(IEnumerable<Vector3> cells)
     {
-        if (tilePrefab == null)
-        {
-            Debug.LogError("GridHighlighter: tilePrefab not set.");
-            return null;
-        }
-
-        var go = Instantiate(tilePrefab, poolParent);
-        go.SetActive(active);
-        return go;
-    }
-
-    private GameObject GetTileFromPool()
-    {
-        foreach (var g in pool)
-        {
-            if (!g.activeSelf)
-                return g;
-        }
-
-        // none free → create another
-        var created = CreatePooledTile(false);
-        pool.Add(created);
-        return created;
+        ShowTiles(cells, HighlightType.Move);
     }
 
     /// <summary>
-    /// Show highlights in a circular area centered on worldPosition.
-    /// diameter = number of cells across. For example diameter 10 -> radius 5.
+    /// Highlights a single selected tile.
     /// </summary>
-    public void ShowAreaAt(Vector3 worldPosition, int diameter)
+    public void ShowSelectedCell(Vector3 cell)
     {
-        if (tilePrefab == null)
-            return;
+        ShowTiles(new List<Vector3> { cell }, HighlightType.Selected);
+    }
 
-        int radius = Mathf.FloorToInt(diameter / 2f);
+    /// <summary>
+    /// Shows a diameter-based AoE around a center point (Grid snapped).
+    /// </summary>
+    public void ShowAreaAt(Vector3 worldCenter, int diameter, HighlightType type)
+    {
+        float half = diameter / 2f;
 
-        // snap center to integer grid (assumes grid aligned to world integer coordinates)
-        int centerX = Mathf.RoundToInt(worldPosition.x / cellSize);
-        int centerZ = Mathf.RoundToInt(worldPosition.z / cellSize);
+        List<Vector3> cells = new List<Vector3>();
 
-        // deactivate all currently active tiles first (we'll reactivate the ones we need)
-        foreach (var t in pool)
+        int radius = Mathf.FloorToInt(half);
+
+        Vector3 snapped = SnapToCell(worldCenter);
+
+        for (int x = -radius; x <= radius; x++)
         {
-            if (t.activeSelf)
-                t.SetActive(false);
-        }
-
-        // create / activate tiles within radius
-        for (int dx = -radius; dx <= radius; dx++)
-        {
-            for (int dz = -radius; dz <= radius; dz++)
+            for (int z = -radius; z <= radius; z++)
             {
-                bool include;
-                if (useEuclidean)
-                {
-                    // use Euclidean distance: circle
-                    float dist = Mathf.Sqrt(dx * dx + dz * dz);
-                    include = dist <= radius + 0.0001f;
-                }
-                else
-                {
-                    // use Manhattan distance: diamond
-                    include = Mathf.Abs(dx) + Mathf.Abs(dz) <= radius;
-                }
-
-                if (!include) continue;
-
-                var tile = GetTileFromPool();
-                tile.SetActive(true);
-
-                Vector3 pos = new Vector3((centerX + dx) * cellSize, 0f, (centerZ + dz) * cellSize);
-                tile.transform.position = pos + new Vector3(0f, 1.01f, 0f); // slightly above ground to avoid z-fighting
-
-                // Ensure tile is oriented flat on XZ plane (Quad by default faces +Z normally)
-                tile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
-                // scale tile to cellSize (if the prefab is 1x1)
-                tile.transform.localScale = Vector3.one * cellSize;
+                Vector3 pos = snapped + new Vector3(x * cellSize, 0, z * cellSize);
+                cells.Add(pos);
             }
         }
+
+        ShowTiles(cells, type);
     }
 
     /// <summary>
-    /// Show exactly one highlighted tile at the given world position (snaps to grid).
-    /// This deactivates any other active pooled tiles so only a single cell is highlighted.
-    /// </summary>
-    public void ShowSingleAt(Vector3 worldPosition)
-    {
-        if (tilePrefab == null)
-            return;
-
-        // snap to integer-aligned grid
-        int x = Mathf.RoundToInt(worldPosition.x / cellSize);
-        int z = Mathf.RoundToInt(worldPosition.z / cellSize);
-
-        // deactivate all tiles first
-        foreach (var t in pool)
-            t.SetActive(false);
-
-        // get a tile and activate it at the snapped position
-        var tile = GetTileFromPool();
-        if (tile == null) return;
-
-        tile.SetActive(true);
-        Vector3 pos = new Vector3(x * cellSize, 0f, z * cellSize);
-        tile.transform.position = pos + new Vector3(0f, 1.01f, 0f);
-        tile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-        tile.transform.localScale = Vector3.one * cellSize;
-    }
-
-    /// <summary>
-    /// Hide all highlights.
+    /// Hides everything.
     /// </summary>
     public void Hide()
     {
-        foreach (var t in pool)
-            t.SetActive(false);
+        foreach (var pool in pools.Values)
+            DeactivatePool(pool);
+    }
+
+    /// <summary>
+    /// Hides only one type of highlight.
+    /// </summary>
+    public void HideType(HighlightType type)
+    {
+        DeactivatePool(pools[type]);
+    }
+
+    // ------------------------------
+    //      INTERNAL UTILITY
+    // ------------------------------
+
+    private void ShowTiles(IEnumerable<Vector3> worldCells, HighlightType type)
+    {
+        TilePool pool = pools[type];
+        DeactivatePool(pool);
+
+        foreach (var cell in worldCells)
+        {
+            GameObject tile = GetTile(pool);
+            tile.transform.position = SnapToCell(cell);
+            tile.SetActive(true);
+        }
+    }
+
+    private Vector3 SnapToCell(Vector3 pos)
+{
+    int x = Mathf.RoundToInt(pos.x / cellSize);
+    int z = Mathf.RoundToInt(pos.z / cellSize);
+
+    return new Vector3(
+        x * cellSize,
+        highlightHeight,   // force consistent tile height
+        z * cellSize
+    );
+}
+
+    private GameObject GetTile(TilePool pool)
+{
+    if (pool.activeCount >= pool.tiles.Count)
+    {
+        GameObject obj = Instantiate(highlightTilePrefab, transform);
+        pool.tiles.Add(obj);
+
+        // Disable physics so tiles never push players
+        var col = obj.GetComponent<Collider>();
+        if (col != null)
+        {
+            col.isTrigger = true;   // no collision force
+        }
+
+        var rb = obj.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            Destroy(rb);            // tiles should NEVER have rigidbodies
+        }
+
+        // Assign material
+        var renderer = obj.GetComponentInChildren<Renderer>();
+        if (renderer != null)
+            renderer.material = GetMaterialForPool(pool);
+
+        pool.activeCount++;
+        return obj;
+    }
+    else
+    {
+        GameObject obj = pool.tiles[pool.activeCount];
+        pool.activeCount++;
+        return obj;
+    }
+}
+
+    private Material GetMaterialForPool(TilePool pool)
+    {
+        foreach (var kv in pools)
+            if (kv.Value == pool)
+                return GetMaterialForType(kv.Key);
+
+        return null;
+    }
+
+    private Material GetMaterialForType(HighlightType type)
+    {
+        return type switch
+        {
+            HighlightType.Move => moveMaterial,
+            HighlightType.Ability => abilityMaterial,
+            HighlightType.Selected => selectedMaterial,
+            HighlightType.Danger => dangerMaterial,
+            HighlightType.Action => actionMaterial,
+            _ => abilityMaterial
+        };
+    }
+
+    private void DeactivatePool(TilePool pool)
+    {
+        for (int i = 0; i < pool.tiles.Count; i++)
+            pool.tiles[i].SetActive(false);
+
+        pool.activeCount = 0;
     }
 }
