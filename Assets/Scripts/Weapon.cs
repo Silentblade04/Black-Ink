@@ -12,6 +12,11 @@ public class Weapon : MonoBehaviour
     public MasterPlayer player; // The omni player
     public PlayerController playerController; //Actual player object
 
+    //Some help from ChatGPT making the partical system and audio work
+    [SerializeField] private ParticleSystem ps;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip clip;
+
     [SerializeField] private GameObject target;
 
     //firing cone stuff
@@ -85,6 +90,10 @@ public class Weapon : MonoBehaviour
             Debug.Log("No target");
             return;
         }
+
+        ps.Play(); //plays a smoke particle
+        audioSource.PlayOneShot(clip);
+
         Vector3 direction = (target.transform.position - playerController.transform.position).normalized;
 
         Vector3 deviatedDirection = ApplyDeviation(direction, Accuracy);
