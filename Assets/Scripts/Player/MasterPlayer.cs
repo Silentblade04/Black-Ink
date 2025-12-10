@@ -62,7 +62,6 @@ public class MasterPlayer : MonoBehaviour
 
             if (hitInfo.collider.CompareTag("Environment"))
             {
-                //SetMoveTarget(hitInfo.point);
                 return;
             }
                 
@@ -163,21 +162,6 @@ public class MasterPlayer : MonoBehaviour
         // Reset movement mode to allow new selections
         isInMovementMode = false;
     }
-    // void SetMoveTarget(Vector3 worldPoint)
-    // {
-    //     // Sample NavMesh
-    //     UnityEngine.AI.NavMeshHit navHit;
-    //     if (UnityEngine.AI.NavMesh.SamplePosition(worldPoint, out navHit, 1f, UnityEngine.AI.NavMesh.AllAreas))
-    //     {
-    //         requestedMovePoint = navHit.position;
-    //         isInMovementMode = true;
-
-    //         // Highlight single tile
-    //         if (gridHighlighter != null)
-    //             gridHighlighter.ShowSingleAt(navHit.position);
-
-    //         Debug.Log($"Movement target set to {requestedMovePoint}");
-    //     }
-    // }
+    
     
 }
