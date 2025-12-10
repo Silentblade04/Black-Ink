@@ -1,14 +1,11 @@
-using NUnit.Framework;
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.ProBuilder.Shapes;
+using System;   // optional
 
 public class MasterPlayer : MonoBehaviour
+//GPT Assistance
 {
-    //Got help from chatGPT for this
-    Camera mainCamera; //The main player camera
+    Camera mainCamera;
 
     public GameObject ply { get { return player; } }
     public GameObject trg { get { return target; } }
@@ -16,93 +13,99 @@ public class MasterPlayer : MonoBehaviour
     public FiringCone firingCone;
     [SerializeField] private bool fired;
 
-
-    [SerializeField] private GameObject target; //The target of an action like shoot
-    [SerializeField] private GameObject player; //The selected player character
+    [SerializeField] private GameObject target;
+    [SerializeField] private GameObject player;
 
     [SerializeField] private PlayerController controller;
     [SerializeField] private EnemyAI enemyAI;
 
-    [SerializeField] private GridHighlighter gridHighlighter; // assign in inspector
-    [SerializeField] private int highlightDiameter = 10; // default 10 blocks across
-
+    [SerializeField] private GridHighlighter gridHighlighter;
+    [SerializeField] private int highlightDiameter = 10;
 
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform playerTransform;
 
     [SerializeField] private float rotationSpeed = 5f;
 
+    //  NEW: Movement state
+    public bool isInMovementMode = false;
+    public Vector3 requestedMovePoint;
 
     void Start()
     {
-        mainCamera = Camera.main; //assigns the camera
+        mainCamera = Camera.main;
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && !isInMovementMode)
         {
-            //pulled from chatGPT
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            HandleSelection();
+        }
+
+        HandleRotationAndWeapons();
+    }
+
+    // ------------------------------------------
+    // SELECTION HANDLING 
+    // ------------------------------------------
+    void HandleSelection()
+    {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return;
+
+        Ray mouseray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(mouseray, out RaycastHit hitInfo))
+        {
+            Debug.Log("Selected: "+ hitInfo.collider.gameObject.tag);
+
+            if (hitInfo.collider.CompareTag("Environment"))
             {
-                return; // Skip selection
+                //SetMoveTarget(hitInfo.point);
+                return;
+            }
+                
+
+            if (hitInfo.collider.CompareTag("Enemy"))
+            {
+                if (target != null)
+                    target.GetComponent<EnemyAI>().OutlineOff();
+
+                target = hitInfo.collider.gameObject;
+                enemyAI = target.GetComponent<EnemyAI>();
+                enemyAI.Outline();
+                return;
             }
 
-            Ray mouseray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-            if (Physics.Raycast(mouseray, out RaycastHit hitInfo))
+            if (hitInfo.collider.CompareTag("Player"))
             {
-                //debug of what we hit
-                Debug.Log("Selected: "+ hitInfo.collider.gameObject.tag);
+                if (player != null)
+                    player.GetComponent<PlayerController>().OutlineOff();
 
-                if (hitInfo.collider.gameObject.tag == "Environment")
-                {
-                    Debug.Log("Hit the Environment");
+                player = hitInfo.collider.gameObject;
+                playerTransform = player.transform;
+                weapon = player.GetComponent<Weapon>();
+                controller = player.GetComponent<PlayerController>();
+                controller.Outline();
+                firingCone = player.GetComponent<FiringCone>();
 
-                    return; //Skip
-                }
-                if (hitInfo.collider.gameObject.tag == "Enemy")
-                {
-                    if (target != null)
-                    {
-                        target.GetComponent<EnemyAI>().OutlineOff();
-                    }
-                    target = hitInfo.collider.gameObject;
-                    enemyAI = target.GetComponent<EnemyAI>();
-                    enemyAI.Outline();
-                    return;
-                }
-                if(hitInfo.collider.gameObject.tag == "Player")
-                {
-                    if (player != null)
-                    {
-                        player.GetComponent<PlayerController>().OutlineOff();
-                    }
-                    GetComponent<GridClickMovement>();
-                    player = hitInfo.collider.gameObject;
-                    playerTransform = player.GetComponent<Transform>();
-                    weapon = player.GetComponent<Weapon>();
-                    controller = player.GetComponent<PlayerController>();
-                    GetComponent<GridClickMovement>();
-                    controller.Outline();
-                    firingCone = player.GetComponent<FiringCone>();
+                if (gridHighlighter != null)
+                    gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter);
 
-                    if (gridHighlighter != null)
-                    {
-                        gridHighlighter.ShowAreaAt(player.transform.position, highlightDiameter);
-                    }
-                    else
-                    {
-                        Debug.LogWarning("MasterPlayer: GridHighlighter not assigned.");
-                    }
-                    return;
-                }
+                return;
             }
         }
+    }
+
+    // ------------------------------------------
+    // ROTATION & WEAPON HANDLER 
+    // ------------------------------------------
+    void HandleRotationAndWeapons()
+    {
         if (target != null && player != null)
         {
             Vector3 roationDirection = target.transform.position - player.transform.position;
-
             if (roationDirection != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(roationDirection);
@@ -112,12 +115,69 @@ public class MasterPlayer : MonoBehaviour
             firingCone.WeaponAiming();
             return;
         }
-        else
+
+        if (player != null && target == null)
         {
-            if (player != null && target == null)
-            {
-                firingCone.WeaponResting();
-            }
+            firingCone.WeaponResting();
         }
     }
+
+    // ------------------------------------------
+    //  NEW: Called by Move button
+    // ------------------------------------------
+    public void BeginMovementMode()
+    {
+        isInMovementMode = true;
+        gridHighlighter.Hide();
+    }
+
+    public void EndMovementMode()
+    {
+        isInMovementMode = false;
+    }
+    public void DeselectPlayer()
+    {
+        if (player != null)
+        {
+            var pc = player.GetComponent<PlayerController>();
+            if (pc != null) pc.OutlineOff();
+
+            player = null;
+            controller = null;
+            playerTransform = null;
+            weapon = null;
+            firingCone = null;
+
+            if (gridHighlighter != null)
+                gridHighlighter.Hide();
+        }
+
+        if (target != null)
+        {
+            var enemy = target.GetComponent<EnemyAI>();
+            if (enemy != null) enemy.OutlineOff();
+            target = null;
+            enemyAI = null;
+        }
+
+        // Reset movement mode to allow new selections
+        isInMovementMode = false;
+    }
+    // void SetMoveTarget(Vector3 worldPoint)
+    // {
+    //     // Sample NavMesh
+    //     UnityEngine.AI.NavMeshHit navHit;
+    //     if (UnityEngine.AI.NavMesh.SamplePosition(worldPoint, out navHit, 1f, UnityEngine.AI.NavMesh.AllAreas))
+    //     {
+    //         requestedMovePoint = navHit.position;
+    //         isInMovementMode = true;
+
+    //         // Highlight single tile
+    //         if (gridHighlighter != null)
+    //             gridHighlighter.ShowSingleAt(navHit.position);
+
+    //         Debug.Log($"Movement target set to {requestedMovePoint}");
+    //     }
+    // }
+    
 }

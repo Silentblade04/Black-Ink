@@ -120,6 +120,14 @@ public class TurnSystem : MonoBehaviour
         ITurnActor current = turnOrder[currentTurnIndex]; // Get the current actor
         current.EndTurn();                                 // Notify them their turn has ended
 
+        if (currentTurnIndex == 0 && masterList != null)
+        {
+            // Deselect the player at turn end
+            var mp = FindObjectOfType<MasterPlayer>();
+            if (mp != null)
+                mp.DeselectPlayer();
+        }
+
         // Advance to the next actor in the list.
         // The modulo (%) wraps back to 0 after reaching the last actor.
         currentTurnIndex = (currentTurnIndex + 1) % turnOrder.Count;

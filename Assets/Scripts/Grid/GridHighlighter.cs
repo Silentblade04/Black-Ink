@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI; // <-- required for NavMesh
 
 /// <summary>
-/// Turns on a set of highlight tiles around a center cell. Designed for integer-aligned grids.
-/// Attach to a scene object and assign a highlight tile prefab (e.g. Quad scaled to 1x1 with transparent material).
+/// GridHighlighter (NavMesh-aware): shows pooled 1x1 tiles on an integer-aligned grid.
+/// This variant DOES NOT create/activate tiles on positions that are not backed by the NavMesh.
 /// </summary>
 public class GridHighlighter : MonoBehaviour
 {
@@ -21,6 +22,20 @@ public class GridHighlighter : MonoBehaviour
 
     [Tooltip("Should the highlight use Euclidean radius (round) or Manhattan (diamond) selection?")]
     public bool useEuclidean = true;
+
+    [Header("Tile Appearance")]
+    [Tooltip("Material to use for the highlight tiles.")]
+    public Material tileMaterial;
+
+    [Header("NavMesh Validation")]
+    [Tooltip("How far to sample the NavMesh from the tile position when validating. Smaller = stricter.")]
+    public float navSampleDistance = 0.25f;
+
+    [Tooltip("Height above NavMesh to place highlight tile")]
+    public float highlightYOffset = 0.1f; // small offset to avoid z-fighting
+
+    [Tooltip("Which NavMesh area mask to validate against. Defaults to all areas.")]
+    public int navAreaMask = -1; // NavMesh.AllAreas
 
     // pooling
     private readonly List<GameObject> pool = new List<GameObject>();
@@ -65,6 +80,7 @@ public class GridHighlighter : MonoBehaviour
     /// <summary>
     /// Show highlights in a circular area centered on worldPosition.
     /// diameter = number of cells across. For example diameter 10 -> radius 5.
+    /// Tiles will only be shown if NavMesh.SamplePosition finds a valid nav position near the tile.
     /// </summary>
     public void ShowAreaAt(Vector3 worldPosition, int diameter)
     {
@@ -104,16 +120,30 @@ public class GridHighlighter : MonoBehaviour
 
                 if (!include) continue;
 
+                // candidateWorld is X/Z of the tile
+                Vector3 candidateWorld = new Vector3((centerX + dx) * cellSize, 0.5f, (centerZ + dz) * cellSize); // start ~0.5 units above ground
+
+                NavMeshHit hit;
+                if (!NavMesh.SamplePosition(candidateWorld, out hit, navSampleDistance, navAreaMask == -1 ? NavMesh.AllAreas : navAreaMask))
+                {
+                    Debug.Log($"GridHighlighter: skipped tile at {candidateWorld}, NavMesh invalid.");
+                    continue;
+                }
+
                 var tile = GetTileFromPool();
                 tile.SetActive(true);
+                
+                // Apply material if assigned
+                if (tileMaterial != null)
+                {
+                    var renderer = tile.GetComponent<Renderer>();
+                    if (renderer != null)
+                        renderer.material = tileMaterial;
+                }
 
-                Vector3 pos = new Vector3((centerX + dx) * cellSize, 0f, (centerZ + dz) * cellSize);
-                tile.transform.position = pos + new Vector3(0f, 1.01f, 0f); // slightly above ground to avoid z-fighting
-
-                // Ensure tile is oriented flat on XZ plane (Quad by default faces +Z normally)
+                // Snap X/Z to grid, Y from nav hit, plus highlight offset
+                tile.transform.position = new Vector3(candidateWorld.x, hit.position.y + highlightYOffset, candidateWorld.z);
                 tile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-
-                // scale tile to cellSize (if the prefab is 1x1)
                 tile.transform.localScale = Vector3.one * cellSize;
             }
         }
@@ -122,27 +152,30 @@ public class GridHighlighter : MonoBehaviour
     /// <summary>
     /// Show exactly one highlighted tile at the given world position (snaps to grid).
     /// This deactivates any other active pooled tiles so only a single cell is highlighted.
+    /// Only shows the tile if NavMesh validates the position.
     /// </summary>
     public void ShowSingleAt(Vector3 worldPosition)
     {
         if (tilePrefab == null)
             return;
 
-        // snap to integer-aligned grid
+        // Snap to integer-aligned grid X/Z
         int x = Mathf.RoundToInt(worldPosition.x / cellSize);
         int z = Mathf.RoundToInt(worldPosition.z / cellSize);
+        Vector3 candidateWorld = new Vector3(x * cellSize, 0f, z * cellSize); // Y=0, NavMesh will define height
 
-        // deactivate all tiles first
-        foreach (var t in pool)
-            t.SetActive(false);
+        NavMeshHit hit;
+        if (!NavMesh.SamplePosition(candidateWorld, out hit, navSampleDistance, navAreaMask == -1 ? NavMesh.AllAreas : navAreaMask))
+        {
+            Debug.Log($"GridHighlighter: ShowSingleAt skipped tile at {candidateWorld}, NavMesh invalid.");
+            return;
+        }
 
-        // get a tile and activate it at the snapped position
         var tile = GetTileFromPool();
-        if (tile == null) return;
-
         tile.SetActive(true);
-        Vector3 pos = new Vector3(x * cellSize, 0f, z * cellSize);
-        tile.transform.position = pos + new Vector3(0f, 1.01f, 0f);
+
+        // Snap X/Z to grid, Y from NavMesh hit + highlight offset
+        tile.transform.position = new Vector3(candidateWorld.x, hit.position.y + highlightYOffset, candidateWorld.z);
         tile.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
         tile.transform.localScale = Vector3.one * cellSize;
     }
@@ -154,5 +187,16 @@ public class GridHighlighter : MonoBehaviour
     {
         foreach (var t in pool)
             t.SetActive(false);
+    }
+
+    /// <summary>
+    /// Helper: checks whether the provided grid-aligned world position is on/near the NavMesh.
+    /// Uses NavMesh.SamplePosition with navSampleDistance and navAreaMask.
+    /// </summary>
+    private bool IsPositionOnNavMesh(Vector3 worldPos, out NavMeshHit hit)
+    {
+        // put a small upward offset so sample works over uneven ground (optional)
+        Vector3 samplePos = new Vector3(worldPos.x, worldPos.y + 0.1f, worldPos.z);
+        return NavMesh.SamplePosition(samplePos, out hit, navSampleDistance, navAreaMask == -1 ? NavMesh.AllAreas : navAreaMask);
     }
 }
